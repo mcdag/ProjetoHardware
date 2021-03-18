@@ -15,6 +15,6 @@ module mux_4 (
   assign aux_1 = (selector[0]) ? input_two : input_one;
   assign aux_2 = (selector[0]) ? input_four : input_three;
   assign aux_3 = (selector[1]) ? aux_2 : aux_1;
-  assign output_final = (selector[3]) ? input_five : aux_2;
+  assign output_final = (selector[2]) ? input_five : aux_2;
 
   endmodule
