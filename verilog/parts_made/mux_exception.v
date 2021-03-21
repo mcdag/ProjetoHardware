@@ -1,4 +1,4 @@
-module mux_8 (
+module mux_exception (
   input wire  [1:0]  selector,
   output wire [31:0] output_final;
 );

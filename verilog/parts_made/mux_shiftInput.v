@@ -1,4 +1,4 @@
-module mux_12 (
+module mux_shiftInput (
   input wire         selector,
   input wire  [31:0] input_one,
   input wire  [31:0] input_two,

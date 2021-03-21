@@ -1,4 +1,4 @@
-module mux_3 (
+module mux_writeReg (
   input wire  [2:0]  selector,
   input wire  [31:0] input_one,
   input wire  [31:0] input_two,

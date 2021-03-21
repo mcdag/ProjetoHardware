@@ -1,4 +1,4 @@
-module mux_10 (
+module mux_multOrDivLo (
   input wire         selector,
   input wire  [31:0] input_one,
   input wire  [31:0] input_two,

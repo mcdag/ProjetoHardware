@@ -1,4 +1,4 @@
-module mux_6 (
+module mux_ulaB (
   input wire  [1:0]  selector,
   input wire  [31:0] input_one,
   input wire  [31:0] input_three,

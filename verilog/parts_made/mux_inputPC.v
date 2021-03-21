@@ -1,4 +1,4 @@
-module mux_7 (
+module mux_inputPC (
   input wire  [2:0]  selector,
   input wire  [31:0] input_one,
   input wire  [31:0] input_two,
