@@ -1,4 +1,4 @@
-module sign_extend_16 (
+module shift_left2_32 (
     input wire [31:0] Data_in,
     output wire [31:0] Data_out
 );

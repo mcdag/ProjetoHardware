@@ -13,7 +13,7 @@ module cpu(
     wire LO_w;
     wire MDR_w;
     wire ALUOut_w;
-    wire [3:0] ALU_op;
+    wire [2:0] ALU_op;
     wire [2:0] Shift_op;
     wire [1:0] M_SrcA;
     wire [1:0] M_SrcB;
@@ -21,8 +21,10 @@ module cpu(
     wire [1:0] M_IorD;
     wire [1:0] M_WRITE_REG;
     wire [1:0] M_WRITE_DATA;
+    wire [1:0] M_Mult_Or_Div;
+    wire [2:0] M_PCSource;
     wire M_Shift_In;
-    wire M_Shift_N;
+    wire [1:0] M_Shift_N;
 
     // Data wires
     wire [31:0] PC_input;
@@ -35,9 +37,9 @@ module cpu(
     wire [4:0] RS;
     wire [4:0] RT;
     wire [15:0] OFFSET;
-    wire [32:00] SE_16_32_out;
-    wire [32:00] SE_1_32_out;
-    wire [32:00] SL_32_out;
+    wire [31:0] SE_16_32_out;
+    wire [31:0] SE_1_32_out;
+    wire [31:0] SL_32_out;
     wire [31:0] M_IorD_out;
     wire [4:0] WriteReg_input;
     wire [31:0] WriteData_input;
@@ -52,14 +54,14 @@ module cpu(
     wire [31:0] ALUOut_out;
     wire [31:0] HI_out;
     wire [31:0] LO_out;
-    wire [31:0] M_ALUA_out;
-    wire [31:0] M_ALUB_out;
     wire [31:0] M_Shift_In_out;
     wire [31:0] Shift_REG_out;
+    wire [31:0] MEM_out;
+    wire [4:0] M_Shift_N_out;
     wire O;
     wire N;
     wire Z;
-    wire ET;
+    wire EQ;
     wire LT;
     wire GT;
 
@@ -118,7 +120,7 @@ module cpu(
         reset,
         ALUOut_w,
         ALU_out,
-        ALUOut_out,
+        ALUOut_out
     );
 
     Registrador MDR_(
@@ -126,14 +128,14 @@ module cpu(
         reset,
         MDR_w,
         MEM_out,
-        MDR_out,
+        MDR_out
     );
 
     Memoria MEM_(
         M_IorD_out,
         clk,
         MEM_w,
-        ALU_out,
+        MEM_out,
         IR_input
     );
 
@@ -164,16 +166,16 @@ module cpu(
     );
 
     ula32 ALU_(
-        M_ALUA_out,
-        M_ALUB_out,
+        ALU_A_input,
+        ALU_B_input,
         ALU_op,
         ALU_out, // resultado da operacao
         O, //Overflow
         N, //Negativo
         Z, // quando S for zero 
-        ET, // igual
+        EQ, // igual
         LT, // menor que
-        GT, // maior que 
+        GT // maior que 
     );
 
     mux_exception M_EXCEPTION_(
@@ -258,6 +260,44 @@ module cpu(
         WriteData_input,
         BR_A_out,
         BR_B_out
+    );
+
+    ctrl_unit CTRL_(
+        clk,
+        reset,
+        O, // overflow
+        N, // negative
+        Z, // zero??
+        EQ, // equal
+        LT, // menor que
+        GT, // maior que
+        ErroDiv,
+        OPCODE,
+        OFFSET,
+        PC_w,
+        MEM_w,
+        IR_w,
+        BR_w,
+        AB_w,
+        EPC_w,
+        HI_w,
+        LO_w,
+        MDR_w,
+        ALUOut_w,
+        ALU_op,
+        Shift_op,
+        M_Mult_Or_Div,
+        HiOrLow,
+        M_Shift_In,
+        M_IorD,
+        M_WRITE_REG,
+        M_SrcA,
+        M_SrcB,
+        M_Shift_N,
+        M_EXCEPTION,
+        M_WRITE_DATA,
+        M_PCSource,
+        reset
     );
 
 endmodule

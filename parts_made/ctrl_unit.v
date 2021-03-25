@@ -48,7 +48,7 @@ module ctrl_unit (
   output reg [2:0] PCSource,
 
 //Especial controller for reset instruction
-  output reg       rst_out//não está no desenho, é intuitivo
+  output reg       rst_out
 );
 
   // variaveis
