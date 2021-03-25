@@ -18,7 +18,7 @@ module cpu(
     wire [1:0] M_SrcA;
     wire [1:0] M_SrcB;
     wire [1:0] M_EXCEPTION;
-    wire [1:0] M_RMEM;
+    wire [1:0] M_IorD;
     wire [1:0] M_WRITE_REG;
     wire [1:0] M_WRITE_DATA;
     wire M_Shift_In;
@@ -27,6 +27,7 @@ module cpu(
     // Data wires
     wire [31:0] PC_input;
     wire [31:0] PC_out;
+    wire [31:0] EPC_out;
     wire [31:0] M_EXCEPTION_out;
     wire [31:0] IR_input;
     wire [31:0] MDR_out;
@@ -37,8 +38,9 @@ module cpu(
     wire [32:00] SE_16_32_out;
     wire [32:00] SE_1_32_out;
     wire [32:00] SL_32_out;
-    wire [31:0] M_RMEM_out;
-    wire [31:0] MEM_out;
+    wire [31:0] M_IorD_out;
+    wire [4:0] WriteReg_input;
+    wire [31:0] WriteData_input;
     wire [31:0] BR_A_out;
     wire [31:0] BR_B_out;
     wire [31:0] A_out;
@@ -52,7 +54,6 @@ module cpu(
     wire [31:0] LO_out;
     wire [31:0] M_ALUA_out;
     wire [31:0] M_ALUB_out;
-    wire [31:0] M_RMEM_out;
     wire [31:0] M_Shift_In_out;
     wire [31:0] Shift_REG_out;
     wire O;
@@ -69,6 +70,8 @@ module cpu(
         PC_input,
         PC_out
     );
+
+    //mux_PCSource M_PCSource_(); -- ainda nao esta pronto
 
     Registrador B_(
         clk,
@@ -105,9 +108,9 @@ module cpu(
     Registrador EPC_(
         clk,
         reset,
-        PC_w,
+        EPC_w,
         PC_input,
-        PC_out
+        EPC_out
     );
 
     Registrador ALUOut_(
@@ -127,11 +130,11 @@ module cpu(
     );
 
     Memoria MEM_(
-        M_RMEM_out,
+        M_IorD_out,
         clk,
         MEM_w,
         ULA_out,
-        MEM_out
+        IR_input
     );
 
     Instr_Reg IR_(
@@ -178,12 +181,12 @@ module cpu(
         M_EXCEPTION_out
     );
 
-    mux_inputPC M_RMEM_(
-        M_RMEM,
+    mux_IorD M_IorD_(
+        M_IorD,
         PC_out,
         ULA_out,
         M_EXCEPTION_out,
-        M_RMEM_out
+        M_IorD_out
     );
     
     mux_ulaA M_ALUA_(
@@ -201,21 +204,6 @@ module cpu(
         SE_16_32_out,
         SL_32_out,
         ALU_B_input
-    );
-
-    mux_ulaB M_ALUB_(
-        M_SrcB,
-        B_out,
-        SE_16_32_out,
-        SL_32_out,
-        ALU_B_input
-    );
-
-    mux_writeData M_Write_Data_(
-        M_WRITE_REG,
-        RT,
-        OFFSET,
-        RS
     );
 
     mux_shiftInput M_shift_In_(
@@ -248,13 +236,34 @@ module cpu(
     );
 
     mux_writeReg M_Write_Reg_(
+        M_WRITE_REG,
+        RT,
+        OFFSET,
+        RS,
+        WriteReg_input
+    );
+
+    mux_writeData M_Write_Data_(
         M_WRITE_DATA,
         MDR_out,
         ALUOut_out,
         HI_out,
         LO_out,
         Shift_REG_out,
-        SE_1_32_out
+        SE_1_32_out,
+        WriteData_input
+    );
+
+    Banco_reg BR_(
+        clk,
+        reset,
+        RegWrite,
+        RS,
+        RT,
+        WriteReg_input,
+        WriteData_input,
+        BR_A_out,
+        BR_B_out
     );
 
 endmodule
