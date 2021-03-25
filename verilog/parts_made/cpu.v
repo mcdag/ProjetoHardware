@@ -178,7 +178,7 @@ module cpu(
         M_EXCEPTION_out
     );
 
-    mux_inputPC M_RMEM_(
+    mux_memRead M_RMEM_(
         M_RMEM,
         PC_out,
         ULA_out,
