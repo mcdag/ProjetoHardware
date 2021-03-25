@@ -1,0 +1,28 @@
+# Loading project hardware
+# Compile of Banco_reg.vhd was successful.
+# Compile of Instr_Reg.vhd was successful.
+# Compile of Memoria.vhd was successful.
+# Compile of RegDesloc.vhd was successful.
+# Compile of Registrador.vhd was successful.
+# Compile of ula32.vhd was successful.
+# Compile of cpu.v failed with 1 errors.
+# Compile of ctrl_unit.v failed with 4 errors.
+# Compile of div.v failed with 1 errors.
+# Compile of mult.v failed with 1 errors.
+# Compile of mux_exception.v failed with 1 errors.
+# Compile of mux_IorD.v failed with 1 errors.
+# Compile of mux_multOrDiv.v failed with 1 errors.
+# Compile of mux_multOrDivHi.v failed with 1 errors.
+# Compile of mux_multOrDivLo.v failed with 1 errors.
+# Compile of mux_PCSource.v failed with 1 errors.
+# Compile of mux_shiftInput.v failed with 1 errors.
+# Compile of mux_shiftN.v failed with 1 errors.
+# Compile of mux_ulaA.v failed with 1 errors.
+# Compile of mux_ulaB.v failed with 1 errors.
+# Compile of mux_writeData.v failed with 1 errors.
+# Compile of mux_writeReg.v failed with 1 errors.
+# Compile of shift_left2_26.v was successful.
+# Compile of shift_left2_32.v was successful.
+# Compile of sign_extend_1_to_32.v failed with 1 errors.
+# Compile of sign_extend_16_to_32.v failed with 1 errors.
+# 26 compiles, 18 failed with 21 errors.
