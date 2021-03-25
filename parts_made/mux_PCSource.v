@@ -5,7 +5,7 @@ module mux_inputPC (
   input wire  [31:0] input_three,
   input wire  [31:0] input_four,
   input wire  [31:0] input_five,
-  output wire [31:0] output_final;
+  output wire [31:0] output_final
 );
 
   wire [31:0] aux_1;

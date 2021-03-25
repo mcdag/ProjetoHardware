@@ -1,6 +1,6 @@
 module mux_exception (
   input wire  [1:0]  selector,
-  output wire [31:0] output_final;
+  output wire [31:0] output_final
 );
 
   wire [31:0] aux;

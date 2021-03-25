@@ -53,11 +53,13 @@ module ctrl_unit (
 
   // variaveis
   reg [3:0] STATE;
-  reg [2:0] CONT;
+  reg [2:0] COUNTER;
 
   // states
-  parameter ST_RESET = 4'b0000;
+  parameter ST_RESET  = 4'b0000;
   parameter ST_COMMON = 4'b0001;
+  parameter ST_ADD    = 4'b0010;
+  parameter ST_JUMP   = 4'b0011;
 
   // opcodes aliases 
   parameter NULL  =   6'b000000;
@@ -269,8 +271,6 @@ always @(posedge clk) begin
             J: begin
               STATE = ST_JUMP;
             end
-            case
-
           endcase
           PCwrite =  1'b0; 
           MemWrite =  1'b0;

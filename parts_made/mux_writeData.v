@@ -4,9 +4,9 @@ module mux_writeData (
   input wire  [31:0] input_two,
   input wire  [31:0] input_three,
   input wire  [31:0] input_four,
-  input wire  [31:0] input_five;
-  input wire  [31:0] input_six;
-  output wire [31:0] output_final;
+  input wire  [31:0] input_five,
+  input wire  [31:0] input_six,
+  output wire [31:0] output_final
 );
 
   wire [31:0] aux_1;

@@ -207,12 +207,6 @@ module cpu(
     );
 
     mux_shiftInput M_shift_In_(
-        M_shift_In,
-        ALU_A_input,
-        ALU_B_input
-    );
-
-    mux_shiftInput M_shift_In_(
         M_Shift_In,
         ALU_A_input,
         ALU_B_input,
