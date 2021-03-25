@@ -6,7 +6,7 @@ module cpu(
     wire PC_w;
     wire MEM_w;
     wire IR_w;
-    wire REG_w;
+    wire BR_w;
     wire AB_w;
     wire EPC_w;
     wire HI_w;
@@ -133,7 +133,7 @@ module cpu(
         M_IorD_out,
         clk,
         MEM_w,
-        ULA_out,
+        ALU_out,
         IR_input
     );
 
@@ -184,7 +184,7 @@ module cpu(
     mux_IorD M_IorD_(
         M_IorD,
         PC_out,
-        ULA_out,
+        ALU_out,
         M_EXCEPTION_out,
         M_IorD_out
     );
@@ -257,7 +257,7 @@ module cpu(
     Banco_reg BR_(
         clk,
         reset,
-        RegWrite,
+        BR_w,
         RS,
         RT,
         WriteReg_input,
