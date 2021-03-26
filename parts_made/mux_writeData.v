@@ -18,6 +18,6 @@ module mux_writeData (
   assign aux_2 = (selector[0]) ? input_four : input_three;
   assign aux_3 = (selector[1]) ? aux_2 : aux_1;
   assign aux_4 = (selector[0]) ? input_six : input_five;
-  assign output_final = (selector[2]) ? aux_4: aux_2;
+  assign output_final = (selector[2]) ? aux_4: aux_3;
 
   endmodule
