@@ -20,11 +20,13 @@ module cpu(
     wire [1:0] M_EXCEPTION;
     wire [1:0] M_IorD;
     wire [1:0] M_WRITE_REG;
-    wire [1:0] M_WRITE_DATA;
-    wire [1:0] M_Mult_Or_Div;
+    wire [2:0] M_WRITE_DATA;
+    wire M_Mult_Or_Div;
+    wire M_Hi_Or_Lo;
     wire [2:0] M_PCSource;
     wire M_Shift_In;
     wire [1:0] M_Shift_N;
+    wire exception_Div;
 
     // Data wires
     wire [31:0] PC_input;
@@ -57,6 +59,14 @@ module cpu(
     wire [31:0] M_Shift_In_out;
     wire [31:0] Shift_REG_out;
     wire [31:0] MEM_out;
+    wire [31:0] mult_output_hi;
+    wire [31:0] mult_output_lo;
+    wire [31:0] div_output_hi;
+    wire [31:0] div_output_lo;
+    wire [31:0] M_MultOrDivHi_output;
+    wire [31:0] M_MultOrDivLo_output;
+    wire [25:0] jump_wire;
+    wire [31:0] jump_out;
     wire [4:0] M_Shift_N_out;
     wire O;
     wire N;
@@ -73,7 +83,28 @@ module cpu(
         PC_out
     );
 
-    //mux_PCSource M_PCSource_(); -- ainda nao esta pronto
+    instruction_25 Inst_25_(
+        OFFSET,
+        RS,
+        RT,
+        jump_wire
+    );
+
+    calc_Jump Jump_(
+        PC_out,
+        jump_wire,
+        jump_out
+    );
+
+    mux_PCSource M_PCSource_(
+        M_PCSource,
+        EPC_out,
+        ALU_out,
+        ALUOut_out,
+        jump_out,
+        jump_out,
+        PC_input
+    );
 
     Registrador B_(
         clk,
@@ -271,7 +302,7 @@ module cpu(
         EQ, // equal
         LT, // menor que
         GT, // maior que
-        ErroDiv,
+        exception_Div,
         OPCODE,
         OFFSET,
         PC_w,
@@ -287,7 +318,7 @@ module cpu(
         ALU_op,
         Shift_op,
         M_Mult_Or_Div,
-        HiOrLow,
+        M_Hi_Or_Lo,
         M_Shift_In,
         M_IorD,
         M_WRITE_REG,
@@ -298,6 +329,46 @@ module cpu(
         M_WRITE_DATA,
         M_PCSource,
         reset
+    );
+
+    mux_multOrDiv M_MultOrDiv_(
+        M_Mult_Or_Div,
+        M_MultOrDivHi_output,
+        M_MultOrDivLo_output,
+        HI_LO_input
+    );
+
+    mux_multOrDivHi M_MultOrDivHi_(
+        M_Hi_Or_Lo,
+        mult_output_hi,
+        div_output_hi,
+        M_MultOrDivHi_output
+    );
+
+    mux_multOrDivLo M_MultOrDivLo_(
+        M_Hi_Or_Lo,
+        mult_output_lo,
+        div_output_lo,
+        M_MultOrDivLo_output
+    );
+
+    mult MULT_(
+        clk,
+        reset,
+        ALU_A_input,
+        ALU_B_input,
+        mult_output_hi,
+        mult_output_lo
+    );
+
+    div DIV_(
+        clk,
+        reset,
+        ALU_A_input,
+        ALU_B_input,
+        div_output_hi,
+        div_output_lo,
+        exception_Div
     );
 
 endmodule

@@ -15,7 +15,7 @@ module ctrl_unit (
 
 //Meaningful parte of the instruction
   input wire [5:0] OPCODE,
-  input wire [5:0] FUNCT,
+  input wire [15:0] OFFSET,
 
 //Controllers with 1 bit
   output reg   PCwrite,
@@ -54,6 +54,8 @@ module ctrl_unit (
   // variaveis
   reg [3:0] STATE;
   reg [2:0] COUNTER;
+
+  wire [5:0] FUNCT = OFFSET[5:0];
 
   // states
   parameter ST_RESET  = 4'b0000;
