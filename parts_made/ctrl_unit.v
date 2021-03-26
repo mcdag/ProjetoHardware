@@ -443,12 +443,12 @@ always @(posedge clk) begin
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b01; // rd
+          RegDst = 2'b00; // rt
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
           Exception = 2'b00;
-          MemToReg = 3'b001; /// ALUOut
+          MemToReg = 3'b000; /// ALUOut
           PCSource = 3'b000;
 
           rst_out = 1'b0;

@@ -8,6 +8,7 @@ module mux_writeReg (
 
   wire [4:0] aux_1;
   wire [4:0] aux_2;
+  wire [4:0] input_two;
 
   assign input_two = offset[15:11];
 
