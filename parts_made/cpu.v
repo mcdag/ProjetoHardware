@@ -272,8 +272,8 @@ module cpu(
 
     mux_writeData M_Write_Data_(
         M_WRITE_DATA,
-        MDR_out,
         ALUOut_out,
+        MDR_out,
         HI_out,
         LO_out,
         Shift_REG_out,

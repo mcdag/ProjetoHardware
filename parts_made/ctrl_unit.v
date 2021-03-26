@@ -61,7 +61,7 @@ module ctrl_unit (
   parameter ST_RESET  = 4'b0000;
   parameter ST_COMMON = 4'b0001;
   parameter ST_ADD    = 4'b0010;
-  parameter ST_JUMP   = 4'b0011;
+  parameter ST_ADDI   = 4'b0011;
 
   // opcodes aliases 
   parameter NULL  =   6'b000000;
@@ -169,7 +169,7 @@ always @(posedge clk) begin
   else begin
     case (STATE)
       ST_COMMON: begin  
-        if (COUNTER === 3'b000 || COUNTER === 3'b001 || COUNTER === 3'b010) begin
+        if (COUNTER == 3'b000 || COUNTER == 3'b001 || COUNTER == 3'b010) begin
           STATE = ST_COMMON;
           // 3 ciclos -> lendo memoria e calculando pc + 4
           PCwrite =  1'b0;
@@ -181,7 +181,7 @@ always @(posedge clk) begin
           HIWrite =  1'b0;
           LOWrite =  1'b0;
           MDRWrite =  1'b0;
-          ALUOutWrite =  1'b0;
+          ALUOutWrite =  1'b1; // escrever em ALUOut
           ALUOp = 3'b001; /// +
           ShiftCtrl = 2'b00;
           MultOrDiv = 1'b0;
@@ -194,12 +194,12 @@ always @(posedge clk) begin
           ShiftAmt = 2'b00;
           Exception = 2'b00;
           MemToReg = 3'b000;
-          PCSource = 3'b000;
+          PCSource = 3'b001; // saida do ALUResult
 
           rst_out = 1'b0;
           COUNTER = COUNTER + 1;
         end
-        else if (COUNTER === 3'b011) begin
+        else if (COUNTER == 3'b011) begin
           STATE = ST_COMMON;
           // 1 ciclo -> escrevendo em PC e IR o pc + 4 e saida da memoria respectivamente
           PCwrite =  1'b1; // Write no PC
@@ -224,12 +224,12 @@ always @(posedge clk) begin
           ShiftAmt = 2'b00;
           Exception = 2'b00;
           MemToReg = 3'b000;
-          PCSource = 3'b000;
+          PCSource = 3'b010;
 
           rst_out = 1'b0;
           COUNTER = COUNTER + 1;
         end
-        else if (COUNTER === 3'b100) begin
+        else if (COUNTER == 3'b100) begin
           STATE = ST_COMMON;
           // 1 ciclo -> de acordo com dados do IR vamos buscar registradores no BR e escrever em A e B
           // monitor disse que era um único ciclo
@@ -260,7 +260,7 @@ always @(posedge clk) begin
           rst_out = 1'b0; 
           COUNTER = COUNTER + 1;
         end
-        else if (COUNTER === 3'b101) begin
+        else if (COUNTER == 3'b101) begin
           // 1 ciclo -> definir o proximo estado
           case (OPCODE) 
             NULL: begin
@@ -270,8 +270,8 @@ always @(posedge clk) begin
                 end
               endcase
             end
-            J: begin
-              STATE = ST_JUMP;
+            ADDI: begin
+              STATE = ST_ADDI;
             end
           endcase
           PCwrite =  1'b0; 
@@ -303,7 +303,7 @@ always @(posedge clk) begin
         end
       end
       ST_ADD: begin
-        if (COUNTER === 3'b000) begin
+        if (COUNTER == 3'b000) begin
           STATE = ST_ADD;
           // 1 ciclos -> realizar soma e escrever em ALUOut
           PCwrite =  1'b0;
@@ -333,7 +333,7 @@ always @(posedge clk) begin
           rst_out = 1'b0;
           COUNTER = COUNTER + 1;
         end
-        if (COUNTER === 3'b001) begin
+        else if (COUNTER == 3'b001) begin
           STATE = ST_ADD;
           // 1 ciclos -> escrever resultado da soma no banco de registradores
           PCwrite =  1'b0;
@@ -363,7 +363,7 @@ always @(posedge clk) begin
           rst_out = 1'b0;
           COUNTER = COUNTER + 1;
         end
-        if (COUNTER === 3'b010) begin
+        else if (COUNTER == 3'b010) begin
           STATE = ST_COMMON;
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
@@ -390,7 +390,98 @@ always @(posedge clk) begin
           PCSource = 3'b000;
 
           rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
+      ST_ADDI: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_ADDI;
+          // 1 ciclos -> realizar soma e escrever em ALUOut
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b001; /// +
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b01; /// A
+          ALUSrcB = 2'b10; /// OFFSET
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
           COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_ADDI;
+          // 1 ciclos -> escrever resultado da soma no banco de registradores
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b1; // escrever no Banco de Registradores
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b01; // rd
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b001; /// ALUOut
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b010) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
         end
       end 
     endcase
