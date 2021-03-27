@@ -332,9 +332,6 @@ always @(posedge clk) begin
                 SLT: begin
                   STATE = ST_SLT;
                 end
-                SLTI: begin
-                  STATE = ST_SLTI;
-                end
               endcase
             end
             ADDI: begin
@@ -351,6 +348,9 @@ always @(posedge clk) begin
             end
             BGT: begin
               STATE = ST_BGT;
+            end
+            SLTI: begin
+              STATE = ST_SLTI;
             end
           endcase
           PCwrite =  1'b0; 
@@ -2541,6 +2541,8 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end
+
+
     endcase
   end 
 end
