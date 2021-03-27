@@ -1127,12 +1127,66 @@ always @(posedge clk) begin
       end
 
       //COMEÇA A FAZER O MULT
-
-      //COMEÇA A FAZER O DIV
-
-      //COMEÇA A FAZER O BREAK
-      ST_BREAK: begin
+      ST_MULT: begin
         if (COUNTER == 3'b000) begin
+          STATE = ST_MULT;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b01; // A
+          ALUSrcB = 2'b00; // B
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_MULT;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b1; 
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b01; // rd
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b010) begin
           STATE = ST_COMMON;
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
@@ -1161,7 +1215,103 @@ always @(posedge clk) begin
           rst_out = 1'b0;
           COUNTER = 3'b000;
         end
-      end 
+      end
+
+
+      //COMEÇA A FAZER O DIV
+
+      //COMEÇA A FAZER O BREAK
+      ST_BREAK: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_BREAK;
+          // 1 ciclos -> realizar subtração e mandar para o mux pc_source
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b010; /// -
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b01; /// 4 
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_BREAK;
+          // 1 ciclos -> escrever resultado da soma no banco de registradores
+          PCwrite =  1'b1; //ESCREVE NO PC
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b010; //LIBERA O PC-4 PRO PC
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b010) begin
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
 
       //COMEÇA A FAZER O RTE
       ST_RTE: begin
@@ -1173,7 +1323,7 @@ always @(posedge clk) begin
           IRWrite =  1'b0;
           BRWrite =  1'b0;
           ABWrite =  1'b0;
-          EPCWrite =  1'b0;
+          EPCWrite =  1'b1; // ESCREVE NO EPC
           HIWrite =  1'b0;
           LOWrite =  1'b0;
           MDRWrite =  1'b0;
