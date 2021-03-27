@@ -80,8 +80,13 @@ module ctrl_unit (
   parameter ST_SRL    = 6'b010110;
   parameter ST_SLT    = 6'b010111;
   parameter ST_SLTI   = 6'b011000;
-  // clarinha
-  parameter ST_XCHG   = 6'b011100;
+  parameter ST_XCHG   = 6'b011001;
+  parameter ST_MFHI   = 6'b011010;
+  parameter ST_MFLO   = 6'b011011;
+  parameter ST_JUMP   = 6'b011100;
+  parameter ST_JAL    = 6'b011101;
+  parameter ST_LW     = 6'b011110;
+  parameter ST_SW     = 6'b011111;
 
   // opcodes aliases 
   parameter NULL  =   6'b000000;
@@ -111,6 +116,7 @@ module ctrl_unit (
   parameter SRAV  =   6'b000111;
   parameter JR    =   6'b001000;
   parameter BREAK =   6'b001011;
+  parameter MFHI  =   6'b010000;
   parameter MFLO  =   6'b010010;
   parameter RTE   =   6'b010011;
   parameter MULT  =   6'b011000;
@@ -333,6 +339,12 @@ always @(posedge clk) begin
                 SLT: begin
                   STATE = ST_SLT;
                 end
+                MFHI: begin
+                  STATE = ST_MFHI;
+                end
+                MFLO: begin
+                  STATE = ST_MFLO;
+                end
                 XCHG: begin
                   STATE = ST_XCHG;
                 end
@@ -352,6 +364,18 @@ always @(posedge clk) begin
             end
             BGT: begin
               STATE = ST_BGT;
+            end
+            LW: begin
+              STATE = ST_LW;
+            end
+            SW: begin
+              STATE = ST_SW;
+            end
+            J: begin
+              STATE = ST_JUMP;
+            end
+            JAL: begin
+              STATE = ST_JAL;
             end
           endcase
           PCwrite =  1'b0; 
@@ -1208,7 +1232,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00
+          RegDst = 2'b00;
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1237,7 +1261,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE PRIMEIRO HI
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00
+          RegDst = 2'b00;
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1266,7 +1290,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE SEGUNDO LO
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00
+          RegDst = 2'b00;
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1357,7 +1381,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00
+          RegDst = 2'b00;
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1386,7 +1410,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE PRIMEIRO HI
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00
+          RegDst = 2'b00;
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1415,7 +1439,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE SEGUNDO LO
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00
+          RegDst = 2'b00;
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -2934,6 +2958,343 @@ always @(posedge clk) begin
           COUNTER = COUNTER + 1;
         end
         else if (COUNTER == 3'b110) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
+
+      //COMEÇA A FAZER O MFHI
+      ST_MFHI: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_MFHI;
+          // 1 ciclos -> escrever o HI no banco de registradores
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b1; // escrever no Banco de Registradores
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b01; // rd
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b010; //HI
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
+
+      //COMEÇA A FAZER O MFLO
+      ST_MFLO: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_MFLO;
+          // 1 ciclos -> escrever o LO no banco de registradores
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b1; // escrever no Banco de Registradores
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b01; // rd
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b011; //LO
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end 
+
+      //COMEÇA A FAZER O JUMP
+      ST_JUMP: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_JUMP;
+          PCwrite =  1'b1; // escrever em pc
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000; 
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; 
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b011; // jump 
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
+
+      //COMEÇA A FAZER O JAL
+      ST_JAL: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_JAL;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; // escrever em alout
+          ALUOp = 3'b000; /// carrega A
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b001;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_JAL;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b1; // escrever no Banco de Registradores
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b11; // ra
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b010) begin
+          STATE = ST_JAL;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; // escrever em alout
+          ALUOp = 3'b000; /// carrega A(valor de rs)
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b01; ///PEGA O VALOR DE RS
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b001;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b011) begin
+          STATE = ST_JAL;
+          PCwrite =  1'b1; //ESCREVE O jump NO PC
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0; 
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b011; // jump 
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b100) begin 
           STATE = ST_COMMON;
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
