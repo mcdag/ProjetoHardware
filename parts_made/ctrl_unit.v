@@ -273,9 +273,9 @@ always @(posedge clk) begin
               case (FUNCT)
                 ADD: begin
                   STATE = ST_ADD;
+                end
                 SUB: begin
                   STATE = ST_SUB;
-                end
                 end
               endcase
             end
@@ -498,7 +498,7 @@ always @(posedge clk) begin
       //COMEÇA A FAZER O SUB
       ST_SUB: begin
         if (COUNTER == 3'b000) begin
-          STATE = ST_ASUB;
+          STATE = ST_SUB;
           // 1 ciclos -> realizar subtração e escrever em ALUOut
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
@@ -518,7 +518,7 @@ always @(posedge clk) begin
           IorD = 2'b00;
           RegDst = 2'b00;
           ALUSrcA = 2'b01; /// A
-          ALUSrcB = 2'b10; /// OFFSET
+          ALUSrcB = 2'b00; /// B
           ShiftAmt = 2'b00;
           Exception = 2'b00;
           MemToReg = 3'b000;
@@ -528,7 +528,7 @@ always @(posedge clk) begin
           COUNTER = COUNTER + 1;
         end
         else if (COUNTER == 3'b001) begin
-          STATE = ST_ADDI;
+          STATE = ST_SUB;
           // 1 ciclos -> escrever resultado da subtração no banco de registradores
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
@@ -551,7 +551,7 @@ always @(posedge clk) begin
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
           Exception = 2'b00;
-          MemToReg = 3'b001; /// ALUOut
+          MemToReg = 3'b000; /// ALUOut
           PCSource = 3'b000;
 
           rst_out = 1'b0;
