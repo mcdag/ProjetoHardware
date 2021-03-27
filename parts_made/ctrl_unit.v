@@ -52,21 +52,25 @@ module ctrl_unit (
 );
 
   // variables
-  reg [3:0] STATE;
+  reg [5:0] STATE;
   reg [2:0] COUNTER;
 
   wire [5:0] FUNCT = OFFSET[5:0];
 
   // states
-  parameter ST_RESET  = 4'b0000;
-  parameter ST_COMMON = 4'b0001;
-  parameter ST_ADD    = 4'b0010;
-  parameter ST_ADDI   = 4'b0011;
-  parameter ST_SUB    = 4'b0100;
-  parameter ST_BEQ    = 4'b0111;
-  parameter ST_BNE    = 4'b1000;
-  parameter ST_BLE    = 4'b1001;
-  parameter ST_BGT    = 4'b1010;
+  parameter ST_RESET  = 6'b000000;
+  parameter ST_COMMON = 6'b000001;
+  parameter ST_ADD    = 6'b000010;
+  parameter ST_ADDI   = 6'b000011;
+  parameter ST_SUB    = 6'b000100;
+  parameter ST_BEQ    = 6'b000111;
+  parameter ST_BNE    = 6'b001000;
+  parameter ST_BLE    = 6'b001001;
+  parameter ST_BGT    = 6'b001010;
+  parameter ST_DIV    = 6'b001011;
+  parameter ST_MULT   = 6'b001100;
+  parameter ST_BREAK  = 6'b001101;
+  parameter ST_RTE    = 6'b001111;
 
 
   // opcodes aliases 
@@ -287,6 +291,18 @@ always @(posedge clk) begin
             end
             ADDI: begin
               STATE = ST_ADDI;
+            end
+            BEQ: begin
+              STATE = ST_BEQ;
+            end
+            BNE: begin
+              STATE = ST_BNE;
+            end
+            BLE: begin
+              STATE = ST_BLE;
+            end
+            BGT: begin
+              STATE = ST_BGT;
             end
           endcase
           PCwrite =  1'b0; 
@@ -1000,6 +1016,8 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end 
+
+      ST
     endcase
   end 
 end
