@@ -67,10 +67,11 @@ module ctrl_unit (
   parameter ST_BNE    = 6'b001000;
   parameter ST_BLE    = 6'b001001;
   parameter ST_BGT    = 6'b001010;
-  parameter ST_DIV    = 6'b001011;
-  parameter ST_MULT   = 6'b001100;
-  parameter ST_BREAK  = 6'b001101;
-  parameter ST_RTE    = 6'b001111;
+  parameter ST_AND    = 6'b001011;
+  parameter ST_DIV    = 6'b001100;
+  parameter ST_MULT   = 6'b001101;
+  parameter ST_BREAK  = 6'b001111;
+  parameter ST_RTE    = 6'b010000;
 
 
   // opcodes aliases 
@@ -286,6 +287,21 @@ always @(posedge clk) begin
                 end
                 SUB: begin
                   STATE = ST_SUB;
+                end
+                AND: begin
+                  STATE = ST_AND;
+                end
+                MULT: begin
+                  STATE = ST_MULT;
+                end
+                DIV: begin
+                  STATE = ST_DIV;
+                end
+                BREAK: begin
+                  STATE = ST_BREAK;
+                end
+                RTE: begin
+                  STATE = ST_RTE;
                 end
               endcase
             end
@@ -1017,7 +1033,98 @@ always @(posedge clk) begin
         end
       end 
 
-      ST
+      //COMEÇA A FAZER O AND
+      ST_AND: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_AND;
+          // 1 ciclos -> realizar and e escrever em ALUOut
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b011; /// and lógico
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b01; /// A
+          ALUSrcB = 2'b00; /// B
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_AND;
+          // 1 ciclos -> escrever resultado da soma no banco de registradores
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b1; // escrever no Banco de Registradores
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b01; // rd
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b010) begin
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
     endcase
   end 
 end
