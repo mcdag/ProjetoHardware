@@ -51,7 +51,7 @@ module ctrl_unit (
   output reg       rst_out
 );
 
-  // variavbles
+  // variables
   reg [3:0] STATE;
   reg [2:0] COUNTER;
 
@@ -63,6 +63,11 @@ module ctrl_unit (
   parameter ST_ADD    = 4'b0010;
   parameter ST_ADDI   = 4'b0011;
   parameter ST_SUB    = 4'b0100;
+  parameter ST_BEQ    = 4'b0111;
+  parameter ST_BNE    = 4'b1000;
+  parameter ST_BLE    = 4'b1001;
+  parameter ST_BGT    = 4'b1010;
+
 
   // opcodes aliases 
   parameter NULL  =   6'b000000;
@@ -173,7 +178,8 @@ always @(posedge clk) begin
   end
   else begin
     case (STATE)
-      ST_COMMON: begin   //COMMON STATES
+      //COMEÇA A FAZER OS ESTADOS EM COMUM
+      ST_COMMON: begin
         if (COUNTER == 3'b000 || COUNTER == 3'b001 || COUNTER == 3'b010) begin //3 cicles to complete
           STATE = ST_COMMON;
           // 3 ciclos -> lendo memoria e calculando pc + 4
@@ -311,6 +317,7 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end
+
       //COMEÇA A FAZER O ADD
       ST_ADD: begin
         if (COUNTER == 3'b000) begin
@@ -403,6 +410,7 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end
+
       //COMEÇA A FAZER O ADDI
       ST_ADDI: begin
         if (COUNTER == 3'b000) begin
@@ -495,10 +503,11 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end 
+
       //COMEÇA A FAZER O SUB
       ST_SUB: begin
         if (COUNTER == 3'b000) begin
-          STATE = ST_ASUB;
+          STATE = ST_SUB;
           // 1 ciclos -> realizar subtração e escrever em ALUOut
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
@@ -518,7 +527,7 @@ always @(posedge clk) begin
           IorD = 2'b00;
           RegDst = 2'b00;
           ALUSrcA = 2'b01; /// A
-          ALUSrcB = 2'b10; /// OFFSET
+          ALUSrcB = 2'b00; /// B
           ShiftAmt = 2'b00;
           Exception = 2'b00;
           MemToReg = 3'b000;
@@ -528,7 +537,7 @@ always @(posedge clk) begin
           COUNTER = COUNTER + 1;
         end
         else if (COUNTER == 3'b001) begin
-          STATE = ST_ADDI;
+          STATE = ST_SUB;
           // 1 ciclos -> escrever resultado da subtração no banco de registradores
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
@@ -551,13 +560,417 @@ always @(posedge clk) begin
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
           Exception = 2'b00;
-          MemToReg = 3'b001; /// ALUOut
+          MemToReg = 3'b000; /// ALUOut
           PCSource = 3'b000;
 
           rst_out = 1'b0;
           COUNTER = COUNTER + 1;
         end
-        else if (COUNTER == 3'b010) begin 
+        else if (COUNTER == 3'b010) begin
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
+
+      //COMEÇA A FAZER O BEQ
+      ST_BEQ: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_BEQ;
+          // 1 ciclos -> realizar uma soma(jump) e escrever em ALUOut
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b001; /// +
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b11; /// OFFSET(JUMP)
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_BEQ;
+          // 1 ciclos -> mandar o resultado da soma para o mux pc_source
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0; 
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b111; //comparação
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; // rt
+          ALUSrcA = 2'b01; // A
+          ALUSrcB = 2'b00; // B
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b010; //valor do jump
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if(COUNTER == 3'b010) begin
+          STATE = ST_BEQ;
+          if(EQ == 1'b1) begin
+            PCwrite = 1'b1;
+          end
+            rst_out = 1'b0;
+            COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b011) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end 
+
+      //COMEÇA A FAZER O BNE
+      ST_BNE: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_BNE;
+          // 1 ciclos -> realizar uma soma(jump) e escrever em ALUOut
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b001; /// +
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b11; /// OFFSET(JUMP)
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_BNE;
+          // 1 ciclos -> mandar o resultado da soma para o mux pc_source
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0; 
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b111; //comparação
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; // rt
+          ALUSrcA = 2'b01; // A
+          ALUSrcB = 2'b00; // B
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b010; //valor do jump
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if(COUNTER == 3'b010) begin
+          STATE = ST_BNE;
+          if(EQ == 1'b0) begin
+            PCwrite = 1'b1;
+          end
+            rst_out = 1'b0;
+            COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b011) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end 
+
+      //COMEÇA A FAZER O BLE
+      ST_BLE: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_BLE;
+          // 1 ciclos -> realizar uma soma(jump) e escrever em ALUOut
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b001; /// +
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b11; /// OFFSET(JUMP)
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_BLE;
+          // 1 ciclos -> mandar o resultado da soma para o mux pc_source
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0; 
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b111; //comparação
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; // rt
+          ALUSrcA = 2'b01; // A
+          ALUSrcB = 2'b00; // B
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b010; //valor do jump
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if(COUNTER == 3'b010) begin
+          STATE = ST_BLE;
+          if(GT == 1'b0) begin
+            PCwrite = 1'b1;
+          end
+            rst_out = 1'b0;
+            COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b011) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end 
+      
+      //COMEÇA A FAZER O BGT
+      ST_BGT: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_BGT;
+          // 1 ciclos -> realizar uma soma(jump) e escrever em ALUOut
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b001; /// +
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b11; /// OFFSET(JUMP)
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_BGT;
+          // 1 ciclos -> mandar o resultado da soma para o mux pc_source
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0; 
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b111; //comparação
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; // rt
+          ALUSrcA = 2'b01; // A
+          ALUSrcB = 2'b00; // B
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b010; //valor do jump
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if(COUNTER == 3'b010) begin
+          STATE = ST_BGT;
+          if(GT == 1'b1) begin
+            PCwrite = 1'b1;
+          end
+            rst_out = 1'b0;
+            COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b011) begin 
           STATE = ST_COMMON;
           PCwrite =  1'b0;
           MemWrite =  1'b0; 
