@@ -664,13 +664,13 @@ always @(posedge clk) begin
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00; // rt
+          RegDst = 2'b00;
           ALUSrcA = 2'b01; // A
           ALUSrcB = 2'b00; // B
           ShiftAmt = 2'b00;
           Exception = 2'b00;
-          MemToReg = 3'b000; /// ALUOut
-          PCSource = 3'b010; //valor do jump
+          MemToReg = 3'b000;
+          PCSource = 3'b010; // valor do jump
 
           rst_out = 1'b0;
           COUNTER = COUNTER + 1;
@@ -1017,7 +1017,6 @@ always @(posedge clk) begin
         end
       end 
 
-      ST
     endcase
   end 
 end
