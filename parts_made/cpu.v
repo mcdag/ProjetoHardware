@@ -58,7 +58,6 @@ module cpu(
     wire [31:0] LO_out;
     wire [31:0] M_Shift_In_out;
     wire [31:0] Shift_REG_out;
-    wire [31:0] MEM_out;
     wire [31:0] mult_output_hi;
     wire [31:0] mult_output_lo;
     wire [31:0] div_output_hi;
@@ -158,7 +157,7 @@ module cpu(
         clk,
         reset,
         MDR_w,
-        MEM_out,
+        IR_input,
         MDR_out
     );
 
@@ -166,7 +165,7 @@ module cpu(
         M_IorD_out,
         clk,
         MEM_w,
-        MEM_out,
+        B_out,
         IR_input
     );
 
