@@ -279,9 +279,9 @@ always @(posedge clk) begin
               case (FUNCT)
                 ADD: begin
                   STATE = ST_ADD;
+                end
                 SUB: begin
                   STATE = ST_SUB;
-                end
                 end
               endcase
             end
