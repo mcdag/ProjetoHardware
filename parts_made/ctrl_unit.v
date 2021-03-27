@@ -110,7 +110,7 @@ module ctrl_unit (
   parameter XCHG  =   6'b000101;
   parameter SRAV  =   6'b000111;
   parameter JR    =   6'b001000;
-  parameter BREAK =   6'b001101;
+  parameter BREAK =   6'b001011;
   parameter MFLO  =   6'b010010;
   parameter RTE   =   6'b010011;
   parameter MULT  =   6'b011000;
@@ -202,7 +202,7 @@ always @(posedge clk) begin
           IRWrite =  1'b0;
           BRWrite =  1'b0;
           ABWrite =  1'b0;
-          EPCWrite =  1'b10;
+          EPCWrite =  1'b0;
           HIWrite =  1'b0;
           LOWrite =  1'b0;
           MDRWrite =  1'b0;
@@ -352,9 +352,6 @@ always @(posedge clk) begin
             end
             BGT: begin
               STATE = ST_BGT;
-            end
-            SLTI: begin
-              STATE = ST_SLTI;
             end
           endcase
           PCwrite =  1'b0; 
@@ -1162,7 +1159,7 @@ always @(posedge clk) begin
         end
       end
 
-      //COMEÇA A FAZER O MULT - NAO TESTADO E VALIDADO
+      //COMEÇA A FAZER O MULT
       ST_MULT: begin
         if (COUNTER == 3'b000) begin
           STATE = ST_MULT;
@@ -1211,7 +1208,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00;
+          RegDst = 2'b00
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1240,7 +1237,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE PRIMEIRO HI
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00;
+          RegDst = 2'b00
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1269,7 +1266,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE SEGUNDO LO
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00;
+          RegDst = 2'b00
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1311,8 +1308,8 @@ always @(posedge clk) begin
         end
       end
 
-      //COMEÇA A FAZER O DIV - NAO TESTADO E VALIDADO
-      ST_DIV: begin
+      //COMEÇA A FAZER O DIV
+       ST_DIV: begin
         if (COUNTER == 3'b000) begin
           STATE = ST_DIV;
           PCwrite =  1'b0;
@@ -1360,7 +1357,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00;
+          RegDst = 2'b00
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1389,7 +1386,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE PRIMEIRO HI
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00;
+          RegDst = 2'b00
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1418,7 +1415,7 @@ always @(posedge clk) begin
           HiOrLow = 1'b0; //ESCOLHE SEGUNDO LO
           Shiftln = 1'b0;
           IorD = 2'b00;
-          RegDst = 2'b00;
+          RegDst = 2'b00
           ALUSrcA = 2'b00;
           ALUSrcB = 2'b00;
           ShiftAmt = 2'b00;
@@ -1474,7 +1471,7 @@ always @(posedge clk) begin
           HIWrite =  1'b0;
           LOWrite =  1'b0;
           MDRWrite =  1'b0;
-          ALUOutWrite =  1'b1; // escrever em ALOOut
+          ALUOutWrite =  1'b0;
           ALUOp = 3'b010; /// -
           ShiftCtrl = 2'b00;
           MultOrDiv = 1'b0;
@@ -1563,7 +1560,7 @@ always @(posedge clk) begin
           IRWrite =  1'b0;
           BRWrite =  1'b0;
           ABWrite =  1'b0;
-          EPCWrite =  1'b0; // JA FOI ESCRITO NO COMMONS
+          EPCWrite =  1'b1; // ESCREVE NO EPC
           HIWrite =  1'b0;
           LOWrite =  1'b0;
           MDRWrite =  1'b0;
@@ -1629,7 +1626,7 @@ always @(posedge clk) begin
           HIWrite =  1'b0;
           LOWrite =  1'b0;
           MDRWrite =  1'b0;
-          ALUOutWrite =  1'b1; // escrever em ALUOut
+          ALUOutWrite =  1'b0;
           ALUOp = 3'b000; /// carrega A(valor de rs)
           ShiftCtrl = 2'b00;
           MultOrDiv = 1'b0;
