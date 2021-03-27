@@ -5,7 +5,11 @@ module mux_shiftN (
   output wire [4:0] output_final
 );
 
-  assign input_one  = b[10:6];
+  wire [4:0] input_one;
+  wire [4:0] input_two;
+  wire [4:0] aux;
+
+  assign input_one  = offset[10:6];
   assign input_two  = b[4:0];
 
   assign aux = (selector[0]) ? input_two : input_one;
