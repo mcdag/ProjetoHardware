@@ -67,6 +67,7 @@ module ctrl_unit (
   parameter ST_BNE    = 4'b1000;
   parameter ST_BLE    = 4'b1001;
   parameter ST_BGT    = 4'b1010;
+  parameter ST_SLL    = ;
 
 
   // opcodes aliases 
@@ -128,7 +129,7 @@ always @(posedge clk) begin
       MDRWrite =  1'b0;
       ALUOutWrite =  1'b0;
       ALUOp = 3'b000;
-      ShiftCtrl = 2'b00;
+      ShiftCtrl = 2'b000;
       MultOrDiv = 1'b0;
       HiOrLow = 1'b0;
       Shiftln = 1'b0;
@@ -158,7 +159,7 @@ always @(posedge clk) begin
       MDRWrite =  1'b0;
       ALUOutWrite =  1'b0;
       ALUOp = 3'b000;
-      ShiftCtrl = 2'b00;
+      ShiftCtrl = 2'b000;
       MultOrDiv = 1'b0;
       HiOrLow = 1'b0;
       Shiftln = 1'b0;
@@ -194,7 +195,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; // escrever em ALUOut
           ALUOp = 3'b001; /// +
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -225,7 +226,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -256,7 +257,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -300,7 +301,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -334,7 +335,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; /// Write no ALUOut
           ALUOp = 3'b001; /// +
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -364,7 +365,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -393,7 +394,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -427,7 +428,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; /// Write no ALUOut
           ALUOp = 3'b001; /// +
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -457,7 +458,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -486,7 +487,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -520,7 +521,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; /// Write no ALUOut
           ALUOp = 3'b010; /// -
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -550,7 +551,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -579,7 +580,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -613,7 +614,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; /// Write no ALUOut
           ALUOp = 3'b001; /// +
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -643,7 +644,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b111; //comparação
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -680,7 +681,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -714,7 +715,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; /// Write no ALUOut
           ALUOp = 3'b001; /// +
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -744,7 +745,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b111; //comparação
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -781,7 +782,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -815,7 +816,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; /// Write no ALUOut
           ALUOp = 3'b001; /// +
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -845,7 +846,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b111; //comparação
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -882,7 +883,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -916,7 +917,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b1; /// Write no ALUOut
           ALUOp = 3'b001; /// +
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -946,7 +947,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b111; //comparação
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -983,7 +984,7 @@ always @(posedge clk) begin
           MDRWrite =  1'b0;
           ALUOutWrite =  1'b0;
           ALUOp = 3'b000;
-          ShiftCtrl = 2'b00;
+          ShiftCtrl = 2'b000;
           MultOrDiv = 1'b0;
           HiOrLow = 1'b0;
           Shiftln = 1'b0;
@@ -1000,6 +1001,94 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end 
+      // Começa o sll
+      ST_SLL :begin
+        if (COUNTER == 3'b000) begin
+          // 1 ciclos -> Carrega B na entrada e Shamt no N de registrador de deslocamento 
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b000;
+          ShiftCtrl = 3'b001; //  load no registrador
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b1; // Entrada recebe B
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b00; /// B
+          ShiftAmt = 2'b00; // Shamt
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        else if(COUNTER == 3'b001) begin
+          // 2 ciclos -> Shift left n vezes
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b000;
+          ShiftCtrl = 3'b0100; //  load no registrador
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b1; // Shift left n vezes
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b00; /// B
+          ShiftAmt = 2'b00; // Shamt
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        else if(COUNTER == 3'b010) begin
+         // 2 ciclos -> Shift left n vezes
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b000;
+          ShiftCtrl = 3'b0100; //  load no registrador
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b1; // Shift left n vezes
+          IorD = 2'b00;
+          RegDst = 2'b01; // Carrega em rd
+          ALUSrcA = 2'b00; /// PC
+          ALUSrcB = 2'b00; /// B
+          ShiftAmt = 2'b00; // Shamt
+          Exception = 2'b00;
+          MemToReg = 3'b100; // Resultado do shift no write data
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
     endcase
   end 
 end
