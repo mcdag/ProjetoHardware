@@ -4,7 +4,10 @@ module calc_Jump (
     output wire [31:0] Data_out
 );
 
+    wire [27:0] shift;
+
     assign pc4bits = pc[31:28];
-    assign Data_out = {pc4bits,{{Data_in,2'b00}<<2}};
+    assign shift = {Data_in<<2};
+    assign Data_out = {pc4bits,shift};
 
 endmodule 

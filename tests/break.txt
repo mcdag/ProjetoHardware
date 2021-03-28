@@ -1,0 +1,5 @@
+addi 1 1 1 && aumenta 1 no registrador 1 até atingir 7, pois o rte deve conter o endereço 0
+addi 2 0 6
+bgt 1 2 1
+rte
+break && BREAK 

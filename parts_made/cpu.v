@@ -101,7 +101,7 @@ module cpu(
         ALU_out,
         ALUOut_out,
         jump_out,
-        jump_out,
+        M_EXCEPTION_out,
         PC_input
     );
 

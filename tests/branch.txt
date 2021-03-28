@@ -1,0 +1,25 @@
+j 3
+addi 1 0 5 && NAO DEVE SER EXECUTADA
+addi 2 0 8 && NAO DEVE SER EXECUTADA
+addi 3 0 9 && $3 = 9
+addi 4 0 8 && $4 = 8
+j 22 && PULA PARA O JAL
+beq 3 4 1
+lui 5 16 && $5 = 1.048.576
+bne 3 4 1
+lui 6 75 && NAO DEVE SER EXECUTADA
+addi 7 0 8 && $7 = 8
+beq 7 4 1
+lui 8 33 && NAO DEVE SER EXECUTADA
+ble 4 3 1
+lui 9 45 && NAO DEVE SER EXECUTADA
+bgt 4 3 1
+addi 10 0 72 && $10 = 72
+bgt 3 4 1
+lui 11 55 && NAO DEVE SER EXECUTADA
+ble 3 4 1
+addi 12 0 37 && $12 = 37
+jr 31 && PULA PARA DEPOIS DO JAL
+jal 6 && PULA PARA O PRIMEIRO BEQ
+addi 13 0 28 && $13 = 28
+div 13 0 && ERRO DE DIVISÃO POR ZERO, CHECAR EXCEPTION

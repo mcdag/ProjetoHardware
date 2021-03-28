@@ -58,35 +58,37 @@ module ctrl_unit (
   wire [5:0] FUNCT = OFFSET[5:0];
 
   // states
-  parameter ST_RESET  = 6'b000000;
-  parameter ST_COMMON = 6'b000001;
-  parameter ST_ADD    = 6'b000010;
-  parameter ST_ADDI   = 6'b000011;
-  parameter ST_SUB    = 6'b000100;
-  parameter ST_BEQ    = 6'b000111;
-  parameter ST_BNE    = 6'b001000;
-  parameter ST_BLE    = 6'b001001;
-  parameter ST_BGT    = 6'b001010;
-  parameter ST_AND    = 6'b001011;
-  parameter ST_DIV    = 6'b001100;
-  parameter ST_MULT   = 6'b001101;
-  parameter ST_BREAK  = 6'b001111;
-  parameter ST_RTE    = 6'b010000;
-  parameter ST_JR     = 6'b010001;
-  parameter ST_SLL    = 6'b010010;
-  parameter ST_SLLV   = 6'b010011;
-  parameter ST_SRA    = 6'b010100;
-  parameter ST_SRAV   = 6'b010101;
-  parameter ST_SRL    = 6'b010110;
-  parameter ST_SLT    = 6'b010111;
-  parameter ST_SLTI   = 6'b011000;
-  parameter ST_XCHG   = 6'b011001;
-  parameter ST_MFHI   = 6'b011010;
-  parameter ST_MFLO   = 6'b011011;
-  parameter ST_JUMP   = 6'b011100;
-  parameter ST_JAL    = 6'b011101;
-  parameter ST_LW     = 6'b011110;
-  parameter ST_SW     = 6'b011111;
+  parameter ST_RESET     = 6'b000000;
+  parameter ST_COMMON    = 6'b000001;
+  parameter ST_ADD       = 6'b000010;
+  parameter ST_ADDI      = 6'b000011;
+  parameter ST_SUB       = 6'b000100;
+  parameter ST_BEQ       = 6'b000111;
+  parameter ST_BNE       = 6'b001000;
+  parameter ST_BLE       = 6'b001001;
+  parameter ST_BGT       = 6'b001010;
+  parameter ST_AND       = 6'b001011;
+  parameter ST_DIV       = 6'b001100;
+  parameter ST_MULT      = 6'b001101;
+  parameter ST_BREAK     = 6'b001111;
+  parameter ST_RTE       = 6'b010000;
+  parameter ST_JR        = 6'b010001;
+  parameter ST_SLL       = 6'b010010;
+  parameter ST_SLLV      = 6'b010011;
+  parameter ST_SRA       = 6'b010100;
+  parameter ST_SRAV      = 6'b010101;
+  parameter ST_SRL       = 6'b010110;
+  parameter ST_SLT       = 6'b010111;
+  parameter ST_SLTI      = 6'b011000;
+  parameter ST_XCHG      = 6'b011001;
+  parameter ST_MFHI      = 6'b011010;
+  parameter ST_MFLO      = 6'b011011;
+  parameter ST_JUMP      = 6'b011100;
+  parameter ST_JAL       = 6'b011101;
+  parameter ST_LW        = 6'b011110;
+  parameter ST_SW        = 6'b011111;
+  parameter ST_OPCODE_EX = 6'b100000;
+  parameter ST_ADDIU    =  6'b100001; 
 
   // opcodes aliases 
   parameter NULL  =   6'b000000;
@@ -353,6 +355,9 @@ always @(posedge clk) begin
             ADDI: begin
               STATE = ST_ADDI;
             end
+            ADDIU: begin
+              STATE = ST_ADDIU;
+            end
             BEQ: begin
               STATE = ST_BEQ;
             end
@@ -377,6 +382,12 @@ always @(posedge clk) begin
             JAL: begin
               STATE = ST_JAL;
             end
+            SLTI: begin
+              STATE = ST_SLTI;
+            end
+            default: begin
+              STATE = ST_OPCODE_EX;
+            end  
           endcase
           PCwrite =  1'b0; 
           MemWrite =  1'b0;
@@ -592,6 +603,99 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end 
+
+      //COMEÇA A FAZER O ADDIU
+      ST_ADDIU: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_ADDIU;
+          // 1 ciclos -> realizar soma e escrever em ALUOut
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b1; /// Write no ALUOut
+          ALUOp = 3'b001; /// +
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b01; /// A
+          ALUSrcB = 2'b10; /// OFFSET
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000;
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin
+          STATE = ST_ADDIU;
+          // 1 ciclos -> escrever resultado da soma no banco de registradores
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b1; // escrever no Banco de Registradores
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; // rt
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; /// ALUOut
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b010) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
 
       //COMEÇA A FAZER O SUB
       ST_SUB: begin
@@ -2443,7 +2547,7 @@ always @(posedge clk) begin
           PCSource = 3'b000;
 
           rst_out = 1'b0;
-          COUNTER = 3'b000;
+          COUNTER = COUNTER + 1;
         end
         else if (COUNTER == 3'b010) begin 
           STATE = ST_COMMON;
@@ -2534,7 +2638,7 @@ always @(posedge clk) begin
           PCSource = 3'b000;
 
           rst_out = 1'b0;
-          COUNTER = 3'b000;
+          COUNTER = COUNTER + 1;
         end
         else if (COUNTER == 3'b010) begin 
           STATE = ST_COMMON;
@@ -3324,6 +3428,68 @@ always @(posedge clk) begin
           COUNTER = 3'b000;
         end
       end 
+
+      // COMEÇA EXCECCAO OPCODE
+      ST_OPCODE_EX: begin
+        if (COUNTER == 3'b000) begin
+          STATE = ST_OPCODE_EX;
+          PCwrite =  1'b1; // escrever em pc
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000; 
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00;
+          ALUSrcA = 2'b00; 
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00; // opcode inexistente
+          MemToReg = 3'b000;
+          PCSource = 3'b100; // exception
+
+          rst_out = 1'b0;
+          COUNTER = COUNTER + 1;
+        end
+        else if (COUNTER == 3'b001) begin 
+          STATE = ST_COMMON;
+          PCwrite =  1'b0;
+          MemWrite =  1'b0; 
+          IRWrite =  1'b0;
+          BRWrite =  1'b0;
+          ABWrite =  1'b0;
+          EPCWrite =  1'b0;
+          HIWrite =  1'b0;
+          LOWrite =  1'b0;
+          MDRWrite =  1'b0;
+          ALUOutWrite =  1'b0;
+          ALUOp = 3'b000;
+          ShiftCtrl = 2'b00;
+          MultOrDiv = 1'b0;
+          HiOrLow = 1'b0;
+          Shiftln = 1'b0;
+          IorD = 2'b00;
+          RegDst = 2'b00; 
+          ALUSrcA = 2'b00;
+          ALUSrcB = 2'b00;
+          ShiftAmt = 2'b00;
+          Exception = 2'b00;
+          MemToReg = 3'b000; 
+          PCSource = 3'b000;
+
+          rst_out = 1'b0;
+          COUNTER = 3'b000;
+        end
+      end
 
     endcase
   end 
